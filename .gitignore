@@ -9,5 +9,5 @@
 !/Dockerfile
 !/datasets/
 !/datasets/**
-
+!/preprocess/create_embeddings.py
 
