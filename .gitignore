@@ -1,3 +1,6 @@
-*
-!modules/
-!modules/**
+/*
+!/.gitignore
+!/modules/
+!/modules/**
+!/preprocess/
+!/preprocess/**
