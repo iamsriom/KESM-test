@@ -8,11 +8,13 @@ from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 import pandas as pd  # Added for Excel support
 
-def load_entities_with_metadata(file_path):
+def load_entities_with_metadata(file_path, limit=None):
     """
     Load entries and preserve metadata (IDs and text).
     Supports both Excel (.xlsx) files and tab-delimited text files.
     Returns a list of dictionaries containing 'id' and 'text'.
+    
+    If limit is specified, only returns up to that many entries.
     """
     entries = []
     if file_path.lower().endswith('.xlsx'):
@@ -21,6 +23,11 @@ def load_entities_with_metadata(file_path):
             if 'question' not in df.columns:
                 print("Error: Excel file must contain a 'question' column.")
                 return []
+            
+            # Apply limit if specified
+            if limit is not None:
+                df = df.head(limit)
+                
             for i, row in df.iterrows():
                 entry = {'id': f"question_{i}", 'text': str(row['question'])}
                 entries.append(entry)
@@ -30,7 +37,9 @@ def load_entities_with_metadata(file_path):
     else:
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
-                for line in file:
+                for i, line in enumerate(file):
+                    if limit is not None and i >= limit:
+                        break
                     parts = line.strip().split('\t')
                     if len(parts) > 1:
                         entries.append({'id': parts[0], 'text': " ".join(parts[1:])})
@@ -74,7 +83,7 @@ def save_embeddings_and_metadata(embeddings, entries, embeddings_file_path, meta
 def main():
     parser = argparse.ArgumentParser(description="Create embeddings from an input file")
     parser.add_argument("--input_file", type=str, 
-                        default="../../datasets/test_emed_q.xlsx",
+                        default="../../datasets/reproduce/test_emed_q_with_paths.xlsx",
                         help="Input file with entries. For Excel files, expect a 'question' column.")
     parser.add_argument("--output_dir", type=str, 
                         default="questions_embedding",
