@@ -4,3 +4,5 @@
 !/modules/**
 !/preprocess/
 !/preprocess/**
+!/main.py
+!/main2.py
